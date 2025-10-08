@@ -1,65 +1,64 @@
 pipeline {
-    agent any
+  agent { label 'slave3' }
 
-    environment {
-        IMAGE_NAME = "aneesh292002/beautiful-flask-app"
-        CONTAINER_NAME = "beautiful-flask-container"
+  environment {
+    DOCKERHUB_CREDENTIALS = credentials('dockerhub')
+    IMAGE_NAME = "aneesh292002/weekdays-docker"
+  }
+
+  stages {
+
+    stage('Git Clone') {
+      steps {
+        git 'https://github.com/aneeshravikumar2002-eng/python.git'
+      }
     }
 
-    stages {
-        stage('Checkout Code') {
-            steps {
-                echo "Checking out repository..."
-                git branch: 'master', url: 'https://github.com/aneeshravikumar2002-eng/python.git'
-            }
-        }
-
-        stage('Build Docker Image') {
-            steps {
-                echo "Building Docker image..."
-                sh 'docker build -t $IMAGE_NAME:latest .'
-            }
-        }
-
-        stage('Run Docker Container') {
-            steps {
-                echo "Running Docker container..."
-                sh '''
-                    docker stop $CONTAINER_NAME || true
-                    docker rm $CONTAINER_NAME || true
-                    docker run -d --name $CONTAINER_NAME -p 5000:5000 $IMAGE_NAME:latest
-                '''
-            }
-        }
-
-        stage('Test Application') {
-            steps {
-                echo "Testing application..."
-                sh '''
-                    sleep 5
-                    curl -f http://localhost:5000
-                '''
-            }
-        }
-
-        stage('Push to Docker Hub') {
-            steps {
-                echo "Pushing image to Docker Hub..."
-                withCredentials([usernamePassword(credentialsId: 'dockerhub-login', usernameVariable: 'DOCKERHUB_USER', passwordVariable: 'DOCKERHUB_PASS')]) {
-                    sh '''
-                        echo "$DOCKERHUB_PASS" | docker login -u "$DOCKERHUB_USER" --password-stdin
-                        docker push aneesh292002/beautiful-flask-app:latest
-                        docker logout
-                    '''
-                }
-            }
-        }
+    stage('Build App') {
+      steps {
+        echo "Building the application..."
+        sh 'bin/build .'
+      }
     }
 
-    post {
-        always {
-            echo "Cleaning up..."
-            sh 'docker system prune -f'
-        }
+    stage('Docker Login') {
+      steps {
+        echo "Logging in to Docker Hub..."
+        sh '''
+          echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin
+        '''
+      }
     }
+
+    stage('Build & Tag Image') {
+      steps {
+        script {
+          def tag = "demo-java-${env.BUILD_NUMBER}"
+          sh """
+            docker build -t ${IMAGE_NAME}:${tag} .
+            docker tag ${IMAGE_NAME}:${tag} ${IMAGE_NAME}:latest
+          """
+        }
+      }
+    }
+
+    stage('Push to Docker Hub') {
+      steps {
+        script {
+          def tag = "demo-java-${env.BUILD_NUMBER}"
+          sh """
+            docker push ${IMAGE_NAME}:${tag}
+            docker push ${IMAGE_NAME}:latest
+          """
+        }
+      }
+    }
+  }
+
+  post {
+    always {
+      echo "Cleaning up and logging out..."
+      sh 'docker logout || true'
+    }
+  }
 }
