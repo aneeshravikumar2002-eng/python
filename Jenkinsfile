@@ -52,7 +52,7 @@ pipeline {
                 withCredentials([usernamePassword(credentialsId: 'dockerhub-credentials', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
                     sh '''
                         echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
-                        docker push aneesh292002/weekdays-docker:py1
+                        docker push aneesh292002/beautiful-flask-app:latest
                     '''
                 }
             }
