@@ -61,7 +61,7 @@ pipeline {
     post {
         success {
             echo "Build succeeded. Cleaning up..."
-            node {
+            node('any') {
                 sh 'docker system prune -f'
             }
         }
