@@ -48,7 +48,7 @@ pipeline {
                 withCredentials([usernamePassword(credentialsId: 'dockerhub-login', usernameVariable: 'DOCKERHUB_USER', passwordVariable: 'DOCKERHUB_PASS')]) {
                     sh '''
                         echo "$DOCKERHUB_PASS" | docker login -u "$DOCKERHUB_USER" --password-stdin
-                        docker push $IMAGE_NAME:latest
+                        docker push aneesh292002/beautiful-flask-app:latest
                         docker logout
                     '''
                 }
