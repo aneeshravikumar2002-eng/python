@@ -2,7 +2,6 @@ pipeline {
     agent any
 
     environment {
-        // 👇 Replace this with your actual Docker Hub username
         DOCKERHUB_USER = 'aneesh292002'
         IMAGE_NAME = 'beautiful-flask-app'
         IMAGE_TAG = 'latest'
@@ -14,7 +13,7 @@ pipeline {
             steps {
                 echo 'Cloning repository...'
                 // Replace the URL with your GitHub repo
-                git branch: 'main', url: 'https://github.com/aneeshravikumar2002-eng/python.git'
+                git branch: 'master', url: 'https://github.com/aneeshravikumar2002-eng/python.git'
             }
         }
 
