@@ -2,7 +2,8 @@ pipeline {
     agent any
 
     environment {
-        DOCKERHUB_USER = 'aneesh292002'   // Replace this
+        // 👇 Replace this with your actual Docker Hub username
+        DOCKERHUB_USER = 'aneesh292002'
         IMAGE_NAME = 'beautiful-flask-app'
         IMAGE_TAG = 'latest'
         CONTAINER_NAME = 'beautiful-flask-container'
@@ -12,7 +13,8 @@ pipeline {
         stage('Checkout Code') {
             steps {
                 echo 'Cloning repository...'
-                git branch: 'main', url: 'https://github.com/<your-username>/beautiful-flask-app.git'
+                // Replace the URL with your GitHub repo
+                git branch: 'main', url: 'https://github.com/aneeshravikumar2002-eng/python.git'
             }
         }
 
@@ -26,7 +28,6 @@ pipeline {
         stage('Run Docker Container') {
             steps {
                 echo 'Running Docker container...'
-                // Stop and remove existing container if present
                 sh '''
                     docker stop $CONTAINER_NAME || true
                     docker rm $CONTAINER_NAME || true
@@ -38,13 +39,14 @@ pipeline {
         stage('Test Application') {
             steps {
                 echo 'Testing application health...'
-                sh 'sleep 5 && curl -f http://localhost:5000 || (echo "App did not start correctly" && exit 1)'
+                // wait for Flask app to boot up
+                sh 'sleep 5 && curl -f http://localhost:5000 || (echo "App did not start" && exit 1)'
             }
         }
 
         stage('Push to Docker Hub') {
             when {
-                expression { return env.DOCKERHUB_USER != 'your-dockerhub-username' } // skip if not set
+                expression { return env.DOCKERHUB_USER != '' }
             }
             steps {
                 echo 'Pushing image to Docker Hub...'
@@ -65,4 +67,3 @@ pipeline {
         }
     }
 }
-
