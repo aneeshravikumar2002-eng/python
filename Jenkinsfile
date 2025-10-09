@@ -2,71 +2,66 @@ pipeline {
     agent any
 
     environment {
-        IMAGE_NAME = "aneesh292002/beautiful-flask-app"
-        CONTAINER_NAME = "beautiful-flask-container"
-        BUILD_TAG = "build-${env.BUILD_NUMBER}"
+        DOCKERHUB_USER = credentials('dockerhub-login') // Jenkins credential ID
     }
 
     stages {
         stage('Checkout Code') {
             steps {
-                echo "Checking out repository..."
-                git branch: 'master', url: 'https://github.com/aneeshravikumar2002-eng/python.git'
+                echo 'Checking out repository...'
+                git 'https://github.com/aneeshravikumar2002-eng/python.git'
             }
         }
 
         stage('Build Docker Image') {
             steps {
-                echo "Building Docker image..."
-                sh "docker build -t $IMAGE_NAME:$BUILD_TAG -t $IMAGE_NAME:latest ."
+                echo 'Building Docker image...'
+                sh '''
+                    docker build -t aneesh292002/beautiful-flask-app:${BUILD_NUMBER} \
+                                 -t aneesh292002/beautiful-flask-app:latest .
+                '''
             }
         }
 
         stage('Run Docker Container') {
             steps {
-                echo "Running Docker container..."
-                sh """
-                    docker stop $CONTAINER_NAME || true
-                    docker rm $CONTAINER_NAME || true
-                    docker run -d --name $CONTAINER_NAME -p 5000:5000 $IMAGE_NAME:latest
-                """
+                echo 'Running Docker container...'
+                sh '''
+                    docker stop beautiful-flask-container || true
+                    docker rm beautiful-flask-container || true
+                    docker run -d --name beautiful-flask-container -p 5000:5000 aneesh292002/beautiful-flask-app:latest
+                '''
             }
         }
 
         stage('Test Application') {
             steps {
-                echo "Testing application..."
-                sh """
+                echo 'Testing application...'
+                sh '''
                     sleep 10
                     curl -f http://localhost:5000
-                """
+                '''
             }
         }
 
         stage('Push to Docker Hub') {
             steps {
-                echo "Pushing image to Docker Hub..."
+                echo 'Pushing image to Docker Hub...'
                 withCredentials([usernamePassword(credentialsId: 'dockerhub-login', usernameVariable: 'DOCKERHUB_USER', passwordVariable: 'DOCKERHUB_PASS')]) {
-                    sh """
-                        echo "$DOCKERHUB_PASS" | docker login -u aneesh292002
-                        docker push $IMAGE_NAME:$BUILD_TAG
-                        docker push $IMAGE_NAME:latest
+                    sh '''
+                        echo "$DOCKERHUB_PASS" | docker login -u "$DOCKERHUB_USER" --password-stdin
+                        docker push aneesh292002/beautiful-flask-app:${BUILD_NUMBER}
+                        docker push aneesh292002/beautiful-flask-app:latest
                         docker logout
-                    """
+                    '''
                 }
             }
         }
     }
 
     post {
-        success {
-            echo "Build succeeded. Cleaning up..."
-            node('any') {
-                sh 'docker system prune -f'
-            }
-        }
         failure {
-            echo "Build failed. Keeping Docker artifacts for debugging."
+            echo 'Build failed. Keeping Docker artifacts for debugging.'
         }
     }
 }
