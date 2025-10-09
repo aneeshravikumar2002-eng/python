@@ -48,7 +48,7 @@ pipeline {
                 echo "Pushing image to Docker Hub..."
                 withCredentials([usernamePassword(credentialsId: 'dockerhub-login', usernameVariable: 'DOCKERHUB_USER', passwordVariable: 'DOCKERHUB_PASS')]) {
                     sh """
-                        echo "$DOCKERHUB_PASS" | docker login -u "$DOCKERHUB_USER" --password-stdin
+                        echo "$DOCKERHUB_PASS" | docker login -u aneesh292002
                         docker push $IMAGE_NAME:$BUILD_TAG
                         docker push $IMAGE_NAME:latest
                         docker logout
