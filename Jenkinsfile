@@ -48,16 +48,15 @@ pipeline {
             }
         }
     }
-   node {
-     stage('SCM') {
-       checkout scm
-  }
   stage('SonarQube Analysis') {
-    def scannerHome = tool 'SonarScanner';
-    withSonarQubeEnv() {
-      sh "${scannerHome}/bin/sonar-scanner"
+    steps {
+        script {
+            def scannerHome = tool 'SonarScanner' // replace with your tool name
+            withSonarQubeEnv() {
+                sh "${scannerHome}/bin/sonar-scanner"
+            }
+        }
     }
-  }
 }
 
     post {
