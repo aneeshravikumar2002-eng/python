@@ -2,8 +2,9 @@ pipeline {
     agent any
 
     environment {
-        DOCKERHUB_USER = credentials('dockerhub-login')
-    }
+        DOCKERHUB_USER = credentials('dockerhub-login') 
+        SONAR_HOST_URL = 'http://3.109.54.198:9000/' 
+        SONAR_TOKEN = credentials('sonar-token') 
 
     stages {
         stage('Checkout Code') {
@@ -22,7 +23,7 @@ pipeline {
                 '''
             }
         }
-        
+
         stage('Run Docker Container') {
             steps {
                 echo 'Running Docker container...'
@@ -48,14 +49,18 @@ pipeline {
             }
         }
 
-        stage('SonarQube Analysis') {  
+        stage('SonarQube Analysis') {
             steps {
-                script {
-                    def scannerHome = tool 'SonarScanner' 
-                    withSonarQubeEnv() {
-                        sh "${scannerHome}/bin/sonar-scanner"
-                    }
-                }
+                echo 'Running SonarQube analysis using Docker...'
+                sh '''
+                    docker run --rm \
+                      -v $PWD:/usr/src \
+                      sonarsource/sonar-scanner-cli \
+                      -Dsonar.projectKey=python \
+                      -Dsonar.sources=. \
+                      -Dsonar.host.url=$SONAR_HOST_URL \
+                      -Dsonar.login=$SONAR_TOKEN
+                '''
             }
         }
     }
@@ -66,4 +71,3 @@ pipeline {
         }
     }
 }
-
