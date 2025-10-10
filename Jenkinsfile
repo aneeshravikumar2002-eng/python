@@ -4,7 +4,7 @@ pipeline {
     environment {
         DOCKERHUB_USER = credentials('dockerhub-login') 
         SONAR_HOST_URL = 'http://3.109.54.198:9000' 
-        SONAR_TOKEN = credentials('sonar-token') 
+        SONAR_TOKEN = credentials('sonar123') 
     }
 
     stages {
