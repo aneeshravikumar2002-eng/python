@@ -2,9 +2,7 @@ pipeline {
     agent any
 
     environment {
-        DOCKERHUB_USER = credentials('dockerhub-login') 
-        SONAR_HOST_URL = 'http://3.109.54.198:9000' 
-        SONAR_TOKEN = credentials('sonar123') 
+        DOCKERHUB_USER = credentials('dockerhub-login') // Jenkins credential ID
     }
 
     stages {
@@ -49,21 +47,6 @@ pipeline {
                 }
             }
         }
-
-        stage('SonarQube Analysis') {
-            steps {
-                echo 'Running SonarQube analysis using Docker...'
-                sh '''
-                    docker run --rm \
-                      -v $PWD:/usr/src \
-                      sonarsource/sonar-scanner-cli \
-                      -Dsonar.projectKey=python \
-                      -Dsonar.sources=. \
-                      -Dsonar.host.url=$SONAR_HOST_URL \
-                      -Dsonar.login=$SONAR_TOKEN
-                '''
-            }
-        }
     }
 
     post {
@@ -72,4 +55,3 @@ pipeline {
         }
     }
 }
-
