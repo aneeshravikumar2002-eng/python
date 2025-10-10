@@ -22,14 +22,7 @@ pipeline {
                 '''
             }
         }
-        stage('SonarQube Analysis') {
-          def scannerHome = tool 'SonarScanner';
-          withSonarQubeEnv() {
-             sh "${scannerHome}/bin/sonar-scanner"
-    }
-  }
-}
-
+        
         stage('Run Docker Container') {
             steps {
                 echo 'Running Docker container...'
@@ -55,6 +48,17 @@ pipeline {
             }
         }
     }
+   node {
+     stage('SCM') {
+       checkout scm
+  }
+  stage('SonarQube Analysis') {
+    def scannerHome = tool 'SonarScanner';
+    withSonarQubeEnv() {
+      sh "${scannerHome}/bin/sonar-scanner"
+    }
+  }
+}
 
     post {
         failure {
