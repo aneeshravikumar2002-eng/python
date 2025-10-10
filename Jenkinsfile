@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        DOCKERHUB_USER = credentials('dockerhub-login') // Jenkins credential ID
+        DOCKERHUB_USER = credentials('dockerhub-login')
     }
 
     stages {
@@ -47,17 +47,18 @@ pipeline {
                 }
             }
         }
-    }
-  stage('SonarQube Analysis') {
-    steps {
-        script {
-            def scannerHome = tool 'SonarScanner' // replace with your tool name
-            withSonarQubeEnv() {
-                sh "${scannerHome}/bin/sonar-scanner"
+
+        stage('SonarQube Analysis') {  
+            steps {
+                script {
+                    def scannerHome = tool 'SonarScanner' 
+                    withSonarQubeEnv() {
+                        sh "${scannerHome}/bin/sonar-scanner"
+                    }
+                }
             }
         }
     }
-}
 
     post {
         failure {
