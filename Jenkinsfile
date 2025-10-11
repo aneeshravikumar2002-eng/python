@@ -56,13 +56,12 @@ pipeline {
 
         stage('SonarQube Analysis') {
             steps {
-                script {
-                    def scannerHome = tool 'SonarScanner' // Name from Jenkins Tool Configuration
-                    withSonarQubeEnv('My SonarQube Server') { // Name from Jenkins SonarQube config
-                        sh "${scannerHome}/bin/sonar-scanner \
-                            -Dsonar.projectKey=demo-java \
-                            -Dsonar.projectName='Demo Java' \
-                            -Dsonar.sources=src"
+              withSonarQubeEnv('My SonarQube Server') {
+                sh "${tool 'SonarScanner'}/bin/sonar-scanner"
+    }
+  }
+}
+
                     }
                 }
             }
