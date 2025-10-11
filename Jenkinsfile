@@ -60,8 +60,8 @@ pipeline {
                     def scannerHome = tool 'SonarScanner' // Name from Jenkins Tool Configuration
                     withSonarQubeEnv('My SonarQube Server') { // Name from Jenkins SonarQube config
                         sh "${scannerHome}/bin/sonar-scanner \
-                            -Dsonar.projectKey=python \
-                            -Dsonar.projectName='python' \
+                            -Dsonar.projectKey=demo-java \
+                            -Dsonar.projectName='demo java' \
                             -Dsonar.sources=src"
                     }
                 }
