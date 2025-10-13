@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        DOCKERHUB_USER = credentials('dockerhub-login') // Jenkins credential ID
+        DOCKERHUB_USER = credentials('dockerhub-login') 
     }
 
     stages {
@@ -57,8 +57,8 @@ pipeline {
         stage('SonarQube Analysis') {
             steps {
                 script {
-                    def scannerHome = tool 'SonarScanner' // Name from Jenkins Tool Configuration
-                    withSonarQubeEnv('My SonarQube Server') { // Name from Jenkins SonarQube config
+                    def scannerHome = tool 'SonarScanner' 
+                    withSonarQubeEnv('My SonarQube Server') { 
                         sh "${scannerHome}/bin/sonar-scanner \
                             -Dsonar.projectKey=python \
                             -Dsonar.projectName='python' \
