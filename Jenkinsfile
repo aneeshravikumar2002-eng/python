@@ -6,7 +6,7 @@ pipeline {
     }
 
     stages {
-        stage('Checkout Code') {
+        stage('git clone') {
             steps {
                 echo 'Checking out repository...'
                 git 'https://github.com/aneeshravikumar2002-eng/python.git'
@@ -56,15 +56,13 @@ pipeline {
 
         stage('SonarQube Analysis') {
             steps {
-                script {
-                    def scannerHome = tool 'SonarScanner' 
-                    withSonarQubeEnv('My SonarQube Server') { 
-                        sh "${scannerHome}/bin/sonar-scanner \
-                            -Dsonar.projectKey=python \
-                            -Dsonar.projectName='python' \
-                            -Dsonar.sources=."
+                def scannerHome = tool 'SonarScanner' 
+                withSonarQubeEnv('My SonarQube Server') { 
+                    sh "${scannerHome}/bin/sonar-scanner \
+                        -Dsonar.projectKey=python \
+                        -Dsonar.projectName='python' \
+                        -Dsonar.sources=."
                     }
-                }
             }
         }
     }
