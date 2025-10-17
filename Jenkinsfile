@@ -50,13 +50,15 @@ pipeline {
 
         stage('SonarQube Analysis') {
             steps {
-                def scannerHome = tool 'SonarScanner' 
-                withSonarQubeEnv('My SonarQube Server') { 
-                    sh "${scannerHome}/bin/sonar-scanner \
-                        -Dsonar.projectKey=python \
-                        -Dsonar.projectName='python' \
-                        -Dsonar.sources=."
+                script{  
+                    def scannerHome = tool 'SonarScanner' 
+                    withSonarQubeEnv('My SonarQube Server') { 
+                        sh "${scannerHome}/bin/sonar-scanner \
+                            -Dsonar.projectKey=python \
+                            -Dsonar.projectName='python' \
+                            -Dsonar.sources=."
                     }
+                }
             }
         }
     }
