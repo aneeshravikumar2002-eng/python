@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: beautiful-flask-deployment
+  labels:
+    app: beautiful-flask
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: beautiful-flask
+  template:
+    metadata:
+      labels:
+        app: beautiful-flask
+    spec:
+      containers:
+        - name: beautiful-flask
+          image: aneesh292002/beautiful-flask-app:latest
+          ports:
+            - containerPort: 5000
