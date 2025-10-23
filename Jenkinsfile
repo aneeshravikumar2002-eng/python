@@ -62,6 +62,20 @@ pipeline {
             }
         }
     }
+    stage('Deploy to Kubernetes') {
+            steps {
+                echo 'Deploying to Kubernetes...'
+                withCredentials([file(credentialsId: 'kubeconfig', variable: 'KUBECONFIG')]) {
+                    sh '''
+                        kubectl --kubeconfig=$KUBECONFIG apply -f k8s/deployment.yaml
+                        kubectl --kubeconfig=$KUBECONFIG apply -f k8s/service.yaml
+                        kubectl --kubeconfig=$KUBECONFIG rollout status deployment/beautiful-flask-deployment
+                    '''
+                }
+            }
+        }
+    }
+
 
     post {
         failure {
