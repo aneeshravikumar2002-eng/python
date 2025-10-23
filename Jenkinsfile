@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        DOCKERHUB_USER = credentials('dockerhub-login') 
+        DOCKERHUB_USER = credentials('dockerhub-login')
     }
 
     stages {
@@ -50,19 +50,21 @@ pipeline {
 
         stage('SonarQube Analysis') {
             steps {
-                script{  
-                    def scannerHome = tool 'SonarScanner' 
-                    withSonarQubeEnv('My SonarQube Server') { 
-                        sh "${scannerHome}/bin/sonar-scanner \
+                script {
+                    def scannerHome = tool 'SonarScanner'
+                    withSonarQubeEnv('My SonarQube Server') {
+                        sh """
+                            ${scannerHome}/bin/sonar-scanner \
                             -Dsonar.projectKey=python \
                             -Dsonar.projectName='python' \
-                            -Dsonar.sources=."
+                            -Dsonar.sources=.
+                        """
                     }
                 }
             }
         }
-    }
-    stage('Deploy to Kubernetes') {
+
+        stage('Deploy to Kubernetes') {
             steps {
                 echo 'Deploying to Kubernetes...'
                 withCredentials([file(credentialsId: 'kubeconfig', variable: 'KUBECONFIG')]) {
@@ -75,7 +77,6 @@ pipeline {
             }
         }
     }
-
 
     post {
         failure {
