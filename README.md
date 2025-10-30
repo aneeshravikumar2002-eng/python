@@ -57,7 +57,7 @@ services:
 ```
 
 ### **3.4 Initialize Kubernetes Cluster**
-Follow: https://github.com/yeshwanthlm/Kubeadm-Installation-Guide.git
+Follow: https://github.com/aneeshravikumar2002-eng/Kubeadm-Installation-Guide.git
 
 ## **4. Jenkins Plugin Installation**
 | Plugin | Purpose |
