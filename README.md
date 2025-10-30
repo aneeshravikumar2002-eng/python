@@ -179,7 +179,7 @@ Set token: `flaskbuildtoken123`
 ```
 SCM: Git
 Repo URL: https://github.com/aneeshravikumar2002-eng/python.git
-Branch: */main
+Branch: */master
 Script Path: Jenkinsfile
 ```
 
